@@ -1,9 +1,9 @@
 
-#include <hello.hpp>
+#include "identifier.hpp"
 
 int main() {
-    hello foo;
-    foo.show();
+    GridImage iamge;
+    iamge.get_standard_grid();
 
     return 0;
 }
