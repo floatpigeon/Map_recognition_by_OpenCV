@@ -1,14 +1,15 @@
 #include "identifier.hpp"
 
 #include <opencv2/calib3d.hpp>
+#include <opencv2/core/mat.hpp>
 #include <opencv2/core/matx.hpp>
 #include <opencv2/core/types.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <vector>
 
-bool GridImage::get_standard_grid() {
-    cv::Mat standard_image = cv::imread("../include/images/standard_image.png");
+bool GridImage::get_standard_grid(const std::string name) {
+    cv::Mat standard_image = cv::imread(name);
     if (standard_image.empty()) {
         std::cout << "can't find standard iamge" << std::endl;
         return false;
@@ -52,10 +53,59 @@ bool GridImage::get_standard_grid() {
     std::cout << "height " << grid_H << "points" << std::endl;
     std::cout << "width " << grid_W << "points" << std::endl;
 
-    cv::drawChessboardCorners(standard_image, patternSize, cv::Mat(corners), found);
-    cv::imshow("Chessboard Corners", standard_image);
+    // cv::drawChessboardCorners(standard_image, patternSize, cv::Mat(corners), found);
+    // cv::imshow("Chessboard Corners", standard_image);
+    // if (cv::waitKey(0) == 'q') {
+    //     cv::destroyAllWindows();
+    // }
+    return true;
+}
+
+bool GridImage::identify_map(const std::string name) {
+    cv::Mat map_image = cv::imread(name);
+    if (map_image.empty()) {
+        std::cout << "can't find standard iamge" << std::endl;
+        return false;
+    }
+
+    cv::Mat gray;
+    cv::cvtColor(map_image, gray, cv::COLOR_BGR2GRAY);
+    cv::Mat binary;
+    cv::threshold(gray, binary, 125, 255, cv::THRESH_BINARY);
+
+    cv::imshow("binary", binary);
+
+    int map_row = binary.rows / grid_H;
+    int map_col = binary.cols / grid_W;
+    std::vector<std::vector<int>> num_map(map_row, std::vector<int>(map_col, 0));
+
+    for (int i = 0; i < map_row; i++) {
+        for (int j = 0; j < map_col; j++) {
+            cv::Point p(j * grid_W, i * grid_H);
+            uchar value = binary.at<uchar>(p);
+            if (static_cast<int>(value) == 255) {
+                std::cout << static_cast<int>(value) << std::endl;
+                num_map[i][j] = 0;
+            } else {
+                std::cout << static_cast<int>(value) << std::endl;
+                num_map[i][j] = 1;
+            }
+        }
+    }
+
+    for (int i = 0; i < num_map.size(); i++) {
+        for (int j = 0; j < num_map[0].size(); j++) {
+            std::cout << num_map[i][j];
+        }
+        std::cout << std::endl;
+    }
+    std::cout << binary.rows << "  " << binary.cols << std::endl;
+    std::cout << map_row << "  " << map_col << std::endl;
+    std::cout << map_row * grid_H << "  " << map_col * grid_W << std::endl;
+
     if (cv::waitKey(0) == 'q') {
         cv::destroyAllWindows();
     }
+
     return true;
 }

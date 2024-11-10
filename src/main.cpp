@@ -2,8 +2,9 @@
 #include "identifier.hpp"
 
 int main() {
-    GridImage iamge;
-    iamge.get_standard_grid();
+    GridImage image;
+    image.get_standard_grid("../include/images/standard_image.png");
 
+    image.identify_map("../include/images/test.png");
     return 0;
 }
