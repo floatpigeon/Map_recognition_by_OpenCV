@@ -61,11 +61,11 @@ bool GridImage::get_standard_grid(const std::string name) {
     return true;
 }
 
-bool GridImage::identify_map(const std::string name) {
+std::vector<std::vector<int>> GridImage::identify_map(const std::string name) {
     cv::Mat map_image = cv::imread(name);
     if (map_image.empty()) {
         std::cout << "can't find standard iamge" << std::endl;
-        return false;
+        return {};
     }
 
     cv::Mat gray;
@@ -107,5 +107,5 @@ bool GridImage::identify_map(const std::string name) {
         cv::destroyAllWindows();
     }
 
-    return true;
+    return num_map;
 }
